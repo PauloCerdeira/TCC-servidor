@@ -16,9 +16,10 @@ con.connect(function(err) {
   console.log("Connected!");
 });
 
-setInterval(() => {
-  con.query( `INSERT INTO Consumos (voltagem, corrente, potencia, dataHora) VALUES (${randomInteger(110, 440)} , ${randomInteger(10, 150)} , ${randomInteger(200, 500)}, "${dateDb(new Date)}")`)
-}, 2500);
+// SIMULAR PROTOTIPO ENVIANDO INFO
+// setInterval(() => {
+//   con.query( `INSERT INTO Consumos (voltagem, corrente, potencia, dataHora) VALUES (${randomInteger(110, 440)} , ${randomInteger(10, 150)} , ${randomInteger(200, 500)}, "${dateDb(new Date)}")`)
+// }, 2500);
 
 app.get('/', (req, res) => {
   con.query("SELECT * FROM Teste", function (err, result) {
