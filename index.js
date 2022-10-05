@@ -23,6 +23,21 @@ app.get("/", (req, res) => {
   res.send("Servidor Online!");
 });
 
+app.get("/consumo", (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  let dataHora = new Date();
+  console.log("\nPOTENCIA: ", req.query.potencia);
+  console.log("VOLTAGEM: ", req.query.voltagem);
+  console.log("CORRENTE: ", req.query.corrente);
+  console.log("DATAHORA: ", dataHora);
+  con.query(
+    `INSERT INTO Consumos (voltagem, corrente, potencia, dataHora) VALUES (${
+      req.query.voltagem
+    } , ${req.query.corrente} , ${req.query.potencia}, "${dateDb(dataHora)}")`
+  );
+  res.send("Registro inserido!");
+});
+
 app.get("/tempoReal", (req, res) => {
   //Envia o ultimo registro de consumo recente
   res.header("Access-Control-Allow-Origin", "*");
