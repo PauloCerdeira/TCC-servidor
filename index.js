@@ -15,7 +15,8 @@ const localPort = 3000;
 //       new Date()
 //     )}")`
 //   );
-// }, 2500);
+//   console.log("Simulador inseriu Registro");
+// }, 15000);
 // SIMULAR PROTOTIPO ENVIANDO INFO
 
 app.get("/", (req, res) => {
@@ -25,15 +26,13 @@ app.get("/", (req, res) => {
 
 app.get("/consumo", (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
-  let dataHora = new Date();
+  let dataHora = dateDb(new Date());
   console.log("\nPOTENCIA: ", req.query.potencia);
   console.log("VOLTAGEM: ", req.query.voltagem);
   console.log("CORRENTE: ", req.query.corrente);
   console.log("DATAHORA: ", dataHora);
   con.query(
-    `INSERT INTO Consumos (voltagem, corrente, potencia, dataHora) VALUES (${
-      req.query.voltagem
-    } , ${req.query.corrente} , ${req.query.potencia}, "${dateDb(dataHora)}")`
+    `INSERT INTO Consumos (voltagem, corrente, potencia, dataHora) VALUES (${req.query.voltagem} , ${req.query.corrente} , ${req.query.potencia}, "${dataHora}")`
   );
   res.send("Registro inserido!");
 });
@@ -48,7 +47,19 @@ app.get("/tempoReal", (req, res) => {
         res.status(500).send(err);
         throw err;
       }
-      res.send(result[0]);
+      if (new Date().getTime() - result[0].dataHora.getTime() > 20000) {
+        console.log("Nenhum valor atualizado presente");
+        res.send({
+          voltagem: 0,
+          corrente: 0,
+          potencia: 0,
+          desatualizado: true
+        });
+      } else {
+        result[0].dataHora = dateDb(result[0].dataHora);
+        console.log(result[0]);
+        res.send(result[0]);
+      }
     }
   );
 });
