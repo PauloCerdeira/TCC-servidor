@@ -31,10 +31,19 @@ app.get("/consumo", (req, res) => {
   console.log("VOLTAGEM: ", req.query.voltagem);
   console.log("CORRENTE: ", req.query.corrente);
   console.log("DATAHORA: ", dataHora);
-  con.query(
-    `INSERT INTO Consumos (voltagem, corrente, potencia, dataHora) VALUES (${req.query.voltagem} , ${req.query.corrente} , ${req.query.potencia}, "${dataHora}")`
-  );
-  res.send("Registro inserido!");
+  if (
+    req.query.potencia == undefined ||
+    req.query.voltagem == undefined ||
+    req.query.corrente == undefined
+  ) {
+    console.log("parametros indefinidos");
+    res.status(200).send("Registro não inserido, parametros ausentes");
+  } else {
+    con.query(
+      `INSERT INTO Consumos (voltagem, corrente, potencia, dataHora) VALUES (${req.query.voltagem} , ${req.query.corrente} , ${req.query.potencia}, "${dataHora}")`
+    );
+    res.status(200).send("Registro inserido!");
+  }
 });
 
 app.get("/tempoReal", (req, res) => {
@@ -53,7 +62,7 @@ app.get("/tempoReal", (req, res) => {
           voltagem: 0,
           corrente: 0,
           potencia: 0,
-          desatualizado: true
+          desatualizado: true,
         });
       } else {
         result[0].dataHora = dateDb(result[0].dataHora);
