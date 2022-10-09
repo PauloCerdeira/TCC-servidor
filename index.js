@@ -76,7 +76,38 @@ app.get("/tempoReal", (req, res) => {
 app.get("/periodo", (req, res) => {
   //Envia o consumo por periodo
   res.header("Access-Control-Allow-Origin", "*");
-  res.send("periodo");
+  console.log("dataInicial: ", req.query.dataInicial);
+  console.log("datafinal: ", req.query.dataFinal);
+  if (!req.query.dataInicial || !req.query.dataFinal) {
+    res.send("Parametros invalidos");
+  } else {
+    con.query(
+      `SELECT * FROM Consumos WHERE dataHora BETWEEN "${req.query.dataInicial}" AND "${req.query.dataFinal}"`,
+      function (err, result) {
+        if (err) {
+          res.status(500).send(err);
+          throw err;
+        }
+        if (result.length == 0) {
+          res.send([{ vazio: true }]);
+        } else {
+          let potenciaSeries = { name: "Potencia", data: [] };
+          let voltagemSeries = { name: "Voltagem", data: [] };
+          let correnteSeries = { name: "Corrente", data: [] };
+
+          for (let registro of result) {
+            registro.dataHora.setHours(registro.dataHora.getHours() - 3)
+            let registroTime =  registro.dataHora.getTime()
+            potenciaSeries.data.push([ registroTime, registro.potencia])
+            voltagemSeries.data.push([ registroTime, registro.voltagem])
+            correnteSeries.data.push([ registroTime, registro.corrente])
+          }
+
+          res.send([potenciaSeries, voltagemSeries, correnteSeries]);
+        }
+      }
+    );
+  }
 });
 
 app.listen(process.env.PORT ? process.env.PORT : localPort, () => {
