@@ -56,7 +56,9 @@ app.get("/tempoReal", (req, res) => {
         res.status(500).send(err);
         throw err;
       }
-      if (new Date().getTime() - result[0].dataHora.getTime() > 20000) {
+      console.log("new date com datedb:  ", dateDb(new Date()));
+      console.log("data hora:  ", result[0].dataHora);
+      if (new Date(dateDb(new Date())).getTime() - result[0].dataHora.getTime() > 20000) {
         console.log("Nenhum valor atualizado presente");
         res.send({
           voltagem: 0,
@@ -96,7 +98,9 @@ app.get("/periodo", (req, res) => {
           let correnteSeries = { name: "Corrente", data: [] };
 
           for (let registro of result) {
-            registro.dataHora.setHours(registro.dataHora.getHours() - 3)
+            //local apenas
+            // registro.dataHora.setHours(registro.dataHora.getHours() - 3)
+            //local apenas
             let registroTime =  registro.dataHora.getTime()
             potenciaSeries.data.push([ registroTime, registro.potencia])
             voltagemSeries.data.push([ registroTime, registro.voltagem])
